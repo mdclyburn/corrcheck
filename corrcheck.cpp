@@ -41,6 +41,7 @@ int create_database(const std::string& directory)
 	for(unsigned int i = 0; i < SHA256_DIGEST_LENGTH; i++)
 	    std::cout << std::hex << (unsigned int)hash[i];
 	std::cout << std::endl;
+	fclose(file);
     }
     delete[] buffer;
 
