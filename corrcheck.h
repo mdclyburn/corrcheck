@@ -19,9 +19,10 @@
 #define BUFFER_SIZE 10485760
 
 int create_database(const std::string& directory);
-int verify_database();
+int verify_database(const std::string& directory);
 int update_database();
 
+std::vector<File> get_file_list(const std::string& directory);
 int write_database(const std::string& directory, const std::vector<File>& file_list);
 
 #endif
