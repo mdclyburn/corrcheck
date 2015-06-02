@@ -3,6 +3,11 @@
 int create_database(const std::string& directory)
 {
     std::vector<File> file_list = get_file_list(directory);
+    if(file_list.size() == 0)
+    {
+	std::cout << "No files to checksum." << std::endl;
+	return FAILURE;
+    }
 
     // checksum all given files
     SHA256_CTX sha;
