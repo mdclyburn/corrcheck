@@ -2,26 +2,7 @@
 
 int create_database(const std::string& directory)
 {
-    // get a listing of the files in the directory
-    std::vector<File> file_list;
-    DIR* dir = opendir(directory.c_str());
-    if(dir == nullptr)
-    {
-	std::cout << "\'" << directory << "\'" << " is not readable." << std::endl;
-	return FAILURE;
-    }
-
-    struct stat st;
-    struct dirent* entry = readdir(dir);
-    while(entry != nullptr)
-    {
-	// only add the file to the list if it is not a directory
-	lstat(entry->d_name, &st);
-	if(!S_ISDIR(st.st_mode) || std::string(entry->d_name).compare(".corrcheckdb") == 0)
-	    file_list.push_back(File(std::string(entry->d_name)));
-	entry = readdir(dir);
-    }
-    closedir(dir);
+    std::vector<File> file_list = get_file_list(directory);
 
     // checksum all given files
     SHA256_CTX sha;
@@ -49,6 +30,31 @@ int create_database(const std::string& directory)
     delete[] buffer;
 
     return write_database(directory, file_list);
+}
+
+std::vector<File> get_file_list(const std::string& directory)
+{
+    std::vector<File> file_list;
+    DIR* dir = opendir(directory.c_str());
+    if(dir == nullptr)
+    {
+	std::cout << "\'" << directory << "\' is not readable." << std::endl;
+	return file_list;
+    }
+
+    struct stat st;
+    struct dirent* entry = readdir(dir);
+    while(entry != nullptr)
+    {
+	// only add the file to the list if it is not a directory
+	lstat(entry->d_name, &st);
+	if(!S_ISDIR(st.st_mode) && std::string(entry->d_name).compare(".corrcheckdb") != 0)
+	    file_list.push_back(File(std::string(entry->d_name)));
+	entry = readdir(dir);
+    }
+    closedir(dir);
+
+    return file_list;
 }
 
 int write_database(const std::string& directory, const std::vector<File>& file_list)
