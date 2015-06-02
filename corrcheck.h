@@ -22,5 +22,7 @@ int create_database(const std::string& directory);
 int verify_database();
 int update_database();
 
+int write_database(const std::string& directory, const std::vector<File>& file_list);
+
 #endif
 
