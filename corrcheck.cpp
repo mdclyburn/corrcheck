@@ -57,7 +57,7 @@ int write_database(const std::string& directory, const std::vector<File>& file_l
     // format: <checksum> <null-terminated string of name>
     FILE* file = fopen(std::string(directory + "/.corrcheckdb").c_str(), "w");
     if(file == NULL) return FAILURE;
- 
+
     for(unsigned int i = 0; i < file_list.size(); i++)
     {
 	fwrite(file_list[i].checksum, sizeof(unsigned char), SHA256_DIGEST_LENGTH, file);
