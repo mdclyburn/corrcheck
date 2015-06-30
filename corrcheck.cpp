@@ -10,30 +10,8 @@ int create_database(const std::string& directory)
     }
 
     // checksum all given files
-    SHA256_CTX sha;
-    unsigned char* const buffer = new unsigned char[BUFFER_SIZE];
-    for(File* current_file = file_list; current_file != nullptr; current_file = current_file->next)
-    {
-	SHA256_Init(&sha);
-	FILE* file = fopen(std::string(directory + "/" + current_file->name).c_str(), "r");
-	while(!feof(file))
-	{
-	    const unsigned int bytes_read = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, file);
-	    SHA256_Update(&sha, buffer, bytes_read);
-	}
-	unsigned char hash[SHA256_DIGEST_LENGTH];
-	SHA256_Final(hash, &sha);
-	std::cout << current_file->name << " -> ";
-	for(unsigned int b = 0; b < SHA256_DIGEST_LENGTH; b++)
-	{
-	    std::cout << std::hex << (unsigned int)hash[b];
-	    current_file->checksum[b] = hash[b];
-	}
-	std::cout << std::endl;
-	fclose(file);
-    }
-    delete[] buffer;
-
+    checksum_files(directory, file_list);
+    
     return write_database(directory, file_list);
 }
 
@@ -75,6 +53,37 @@ File* get_file_list(const std::string& directory)
     return file_list;
 }
 
+void checksum_files(const std::string& directory, File* file_list)
+{
+    SHA256_CTX sha;
+    unsigned char* buffer = new unsigned char[BUFFER_SIZE];
+    for(File* current_file = file_list; current_file != nullptr; current_file = current_file->next)
+    {
+	SHA256_Init(&sha);
+	FILE* file = fopen(std::string(directory + "/" + current_file->name).c_str(), "r");
+
+	// hash files in BUFFER_SIZE chunks
+	while(!feof(file))
+	{
+	    const unsigned int bytes_read = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, file);
+	    SHA256_Update(&sha, buffer, bytes_read);
+	}
+
+	// get the final hash
+	unsigned char hash[SHA256_DIGEST_LENGTH];
+	SHA256_Final(hash, &sha);
+	for(unsigned int b = 0; b < SHA256_DIGEST_LENGTH; b++)
+	{
+	    current_file->checksum[b] = hash[b];
+	}
+
+	fclose(file);
+    }
+
+    delete[] buffer;
+ 
+    return;
+}
 int write_database(const std::string& directory, const File* file_list)
 {
     // write the file names and checksums out

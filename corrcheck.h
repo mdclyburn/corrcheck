@@ -24,6 +24,7 @@ int verify_database(const std::string& directory);
 int update_database();
 
 File* get_file_list(const std::string& directory);
+void checksum_files(const std::string& directory, File* file_list);
 int write_database(const std::string& directory, const File* file_list);
 
 #endif
