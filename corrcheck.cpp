@@ -86,6 +86,7 @@ int write_database(const std::string& directory, const File* file_list)
     {
 	fwrite(file_list->checksum, sizeof(unsigned char), SHA256_DIGEST_LENGTH, file);
 	fwrite(file_list->name.c_str(), sizeof(char), file_list->name.length() + 1, file);
+	file_list = file_list->next;
     }
     fclose(file);
 
