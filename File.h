@@ -12,6 +12,7 @@ struct File
  
     std::string name;
     unsigned char checksum[SHA256_DIGEST_LENGTH];
+    File* next;
 };
 
 #endif
