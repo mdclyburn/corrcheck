@@ -2,8 +2,8 @@
 
 int create_database(const std::string& directory)
 {
-    std::vector<File> file_list = get_file_list(directory);
-    if(file_list.size() == 0)
+    File* file_list = get_file_list(directory);
+    if(file_list == nullptr)
     {
 	std::cout << "No files to checksum." << std::endl;
 	return FAILURE;
@@ -12,10 +12,10 @@ int create_database(const std::string& directory)
     // checksum all given files
     SHA256_CTX sha;
     unsigned char* const buffer = new unsigned char[BUFFER_SIZE];
-    for(unsigned int i = 0; i < file_list.size(); i++)
+    for(File* current_file = file_list; current_file != nullptr; current_file = current_file->next)
     {
 	SHA256_Init(&sha);
-	FILE* file = fopen(std::string(directory + "/" + file_list[i].name).c_str(), "r");
+	FILE* file = fopen(std::string(directory + "/" + current_file->name).c_str(), "r");
 	while(!feof(file))
 	{
 	    const unsigned int bytes_read = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, file);
@@ -23,11 +23,11 @@ int create_database(const std::string& directory)
 	}
 	unsigned char hash[SHA256_DIGEST_LENGTH];
 	SHA256_Final(hash, &sha);
-	std::cout << file_list[i].name << " -> ";
+	std::cout << current_file->name << " -> ";
 	for(unsigned int b = 0; b < SHA256_DIGEST_LENGTH; b++)
 	{
 	    std::cout << std::hex << (unsigned int)hash[b];
-	    file_list[i].checksum[b] = hash[b];
+	    current_file->checksum[b] = hash[b];
 	}
 	std::cout << std::endl;
 	fclose(file);
@@ -37,14 +37,15 @@ int create_database(const std::string& directory)
     return write_database(directory, file_list);
 }
 
-std::vector<File> get_file_list(const std::string& directory)
+File* get_file_list(const std::string& directory)
 {
-    std::vector<File> file_list;
+    File* file_list = nullptr;
+    File* last = file_list;
     DIR* dir = opendir(directory.c_str());
     if(dir == nullptr)
     {
 	std::cout << "\'" << directory << "\' is not readable." << std::endl;
-	return file_list;
+	return nullptr;
     }
 
     struct stat st;
@@ -54,7 +55,19 @@ std::vector<File> get_file_list(const std::string& directory)
 	// only add the file to the list if it is not a directory
 	lstat(entry->d_name, &st);
 	if(!S_ISDIR(st.st_mode) && std::string(entry->d_name).compare(".corrcheckdb") != 0)
-	    file_list.push_back(File(std::string(entry->d_name)));
+	{
+	    // null list
+	    if(file_list == nullptr)
+	    {
+		file_list = new File(std::string(entry->d_name));
+		last = file_list;
+	    }
+	    else
+	    {
+		last->next = new File(std::string(entry->d_name));
+		last = last->next;
+	    }
+	}
 	entry = readdir(dir);
     }
     closedir(dir);
@@ -62,17 +75,17 @@ std::vector<File> get_file_list(const std::string& directory)
     return file_list;
 }
 
-int write_database(const std::string& directory, const std::vector<File>& file_list)
+int write_database(const std::string& directory, const File* file_list)
 {
     // write the file names and checksums out
     // format: <checksum> <null-terminated string of name>
     FILE* file = fopen(std::string(directory + "/.corrcheckdb").c_str(), "w");
     if(file == NULL) return FAILURE;
  
-    for(unsigned int i = 0; i < file_list.size(); i++)
+    while(file_list)
     {
-	fwrite(file_list[i].checksum, sizeof(unsigned char), SHA256_DIGEST_LENGTH, file);
-	fwrite(file_list[i].name.c_str(), sizeof(char), file_list[i].name.length() + 1, file);
+	fwrite(file_list->checksum, sizeof(unsigned char), SHA256_DIGEST_LENGTH, file);
+	fwrite(file_list->name.c_str(), sizeof(char), file_list->name.length() + 1, file);
     }
     fclose(file);
 

@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <dirent.h>
 #include <iostream>
+#include <map>
 #include <openssl/ssl.h>
 #include <string>
 #include <sys/stat.h>
@@ -22,8 +23,8 @@ int create_database(const std::string& directory);
 int verify_database(const std::string& directory);
 int update_database();
 
-std::vector<File> get_file_list(const std::string& directory);
-int write_database(const std::string& directory, const std::vector<File>& file_list);
+File* get_file_list(const std::string& directory);
+int write_database(const std::string& directory, const File* file_list);
 
 #endif
 
