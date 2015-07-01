@@ -1,8 +1,13 @@
 #ifndef FILE_H
 #define FILE_H
 
+#include <dirent.h>
+#include <iostream>
 #include <openssl/ssl.h>
 #include <string>
+#include <sys/stat.h>
+
+#include "corrcheck_defines.h"
 
 struct File
 {
