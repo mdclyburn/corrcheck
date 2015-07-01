@@ -12,21 +12,12 @@
 #include <sys/stat.h>
 #include <vector>
 
+#include "corrcheck_defines.h"
 #include "File.h"
-
-#define SUCCESS 0
-#define FAILURE 1
-
-// use a buffer size of 10MB when working with hashes
-#define BUFFER_SIZE 10485760
 
 int create_database(const std::string& directory);
 int verify_database(const std::string& directory);
 int update_database();
-
-File* get_file_list(const std::string& directory);
-void delete_file_list(File* file_list);
-void checksum_files(const std::string& directory, File* file_list, bool show_files = false);
 int write_database(const std::string& directory, const File* file_list);
 
 #endif
