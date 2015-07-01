@@ -61,7 +61,6 @@ int verify_database(const std::string& directory)
 	database_files[name] = hash;
     }
 
-    int result = SUCCESS;
     File* file_list = get_file_list(directory);
     unsigned int new_files = 0, changed_files = 0;
     if(file_list == nullptr)
@@ -107,7 +106,7 @@ int verify_database(const std::string& directory)
     if(changed_files + new_files == 0)
 	std::cout << "All files are checksummed and consistent." << std::endl;
 
-    return result;
+    return SUCCESS;
 }
 
 
