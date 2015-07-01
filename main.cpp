@@ -20,7 +20,8 @@ int main(int argc, char** args)
     }
     else if(*args[1] == 'v')
     {
-	cout << "Verifying files..." << endl;
+	if(argc == 2) result = verify_database(".");
+	else result = verify_database(string(args[2]));
     }
     else if(*args[1] == 'u')
     {

@@ -15,6 +15,85 @@ int create_database(const std::string& directory)
     return write_database(directory, file_list);
 }
 
+int verify_database(const std::string& directory)
+{
+    // ensure that the .corrcheckdb file exists here
+    FILE* corrcheckdb = fopen(std::string(directory + "/.corrcheckdb").c_str(), "r");
+    if(corrcheckdb == nullptr)
+    {
+	std::cout << "Could not open or find the .corrcheckdb file." << std::endl;
+	return FAILURE;
+    }
+
+    // structure: <SHA256 checksum> <file name (null-terminated)>
+    std::cout << "Reading database..." << std::endl;
+    std::map<std::string, unsigned char*> database_files;
+    while(!feof(corrcheckdb))
+    {
+	std::string name;
+	unsigned char* hash = new unsigned char[SHA256_DIGEST_LENGTH];
+	assert(hash);
+
+	// read hash
+	const unsigned int bytes_read = fread(hash, sizeof(unsigned char), SHA256_DIGEST_LENGTH, corrcheckdb);
+	if(bytes_read != SHA256_DIGEST_LENGTH && !feof(corrcheckdb))
+	{
+	    std::cout << "Could not read checksum from database." << std::endl;
+	    return FAILURE;
+	}
+	else if(feof(corrcheckdb))
+	    break;
+
+	// read file name
+	char read_char;
+	do
+	{
+	    if(fread(&read_char, sizeof(char), 1, corrcheckdb) != 1)
+	    {
+		std::cout << "Failed while reading file name from database." << std::endl;
+		return FAILURE;
+	    }
+	    if(read_char != '\0') name += read_char;
+	}
+	while(read_char != '\0');
+	
+	database_files[name] = hash;
+    }
+
+    File* file_list = get_file_list(directory);
+    if(file_list == nullptr)
+	std::cout << "No files to check." << std::endl;
+    else
+    {
+	// run checks on files that are in the database and exist
+	checksum_files(directory, file_list);
+	unsigned int new_files = 0;
+	unsigned int changed_files = 0;
+	File* current = file_list;
+	while(current)
+	{
+	    if(database_files.find(current->name) == database_files.end())
+	    {
+		std::cout << "NEW:     " << current->name << std::endl;
+		new_files++;
+	    }
+
+	    unsigned int i = 0;
+	    while(current->checksum[i] == database_files[current->name][i] && i < SHA256_DIGEST_LENGTH) i++;
+	    if(i != SHA256_DIGEST_LENGTH)
+	    {
+		std::cout << "CHANGED: " << current->name << std::endl;
+		changed_files++;
+	    }
+
+	    current = current->next;
+	}
+    }
+
+    return SUCCESS;
+}
+
+
 File* get_file_list(const std::string& directory)
 {
     File* file_list = nullptr;
