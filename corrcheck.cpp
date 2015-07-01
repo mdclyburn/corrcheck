@@ -10,7 +10,7 @@ int create_database(const std::string& directory)
     }
 
     // checksum all given files
-    checksum_files(directory, file_list);
+    checksum_files(directory, file_list, true);
     const int result = write_database(directory, file_list);
     delete_file_list(file_list);
     
@@ -151,7 +151,7 @@ void delete_file_list(File* file_list)
     return;
 }
 
-void checksum_files(const std::string& directory, File* file_list)
+void checksum_files(const std::string& directory, File* file_list, bool show_files)
 {
     SHA256_CTX sha;
     unsigned char* buffer = new unsigned char[BUFFER_SIZE];
@@ -173,6 +173,15 @@ void checksum_files(const std::string& directory, File* file_list)
 	for(unsigned int b = 0; b < SHA256_DIGEST_LENGTH; b++)
 	{
 	    current_file->checksum[b] = hash[b];
+	}
+
+	// show files with their checksums if enabled
+	if(show_files)
+	{
+	    std::cout << current_file->name << " -> ";
+	    for(unsigned int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+		std::cout << std::hex << (unsigned int) hash[i];
+	    std::cout << std::endl;
 	}
 
 	fclose(file);
