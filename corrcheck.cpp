@@ -62,15 +62,15 @@ int verify_database(const std::string& directory)
 	database_files[name] = hash;
     }
 
+    int result = SUCCESS;
     File* file_list = get_file_list(directory);
+    unsigned int new_files = 0, changed_files = 0;
     if(file_list == nullptr)
 	std::cout << "No files to check." << std::endl;
     else
     {
 	// run checks on files that are in the database and exist
 	checksum_files(directory, file_list);
-	unsigned int new_files = 0;
-	unsigned int changed_files = 0;
 	File* current = file_list;
 	while(current)
 	{
@@ -96,7 +96,16 @@ int verify_database(const std::string& directory)
 
     delete_file_list(file_list);
 
-    return SUCCESS;
+    if(changed_files > 0)
+	std::cout << "File(s) were found that did not match the database checksum(s).\n";
+
+    if(new_files > 0)
+    {
+	std::cout << "New file(s) were found that were not in the database.\n"
+		  << "Consider updating/recreating the database." << std::endl;
+    }
+
+    return result;
 }
 
 
