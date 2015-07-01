@@ -3,6 +3,8 @@ Corrcheck
 
 Experimental tool to check for silent corruption.
 
+[![Build Status](http://ci.mardev.net/buildStatus/icon?job=Corrcheck)](http://ci.mardev.net/job/Corrcheck/)
+
 Description
 -----------
 Silent file corruption can and does happen.
