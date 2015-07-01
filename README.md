@@ -22,3 +22,4 @@ It should also be run in the 'verification mode' periodically (depending on how 
 License
 -------
 Corrcheck is licensed under the MIT license.
+See the LICENSE file included in the top level of the repository.
