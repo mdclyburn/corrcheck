@@ -28,7 +28,6 @@ int verify_database(const std::string& directory)
     }
 
     // structure: <SHA256 checksum> <file name (null-terminated)>
-    std::cout << "Reading database..." << std::endl;
     std::map<std::string, unsigned char*> database_files;
     while(!feof(corrcheckdb))
     {
