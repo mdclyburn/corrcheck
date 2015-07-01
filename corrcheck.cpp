@@ -104,6 +104,9 @@ int verify_database(const std::string& directory)
 		  << "Consider updating/recreating the database." << std::endl;
     }
 
+    if(changed_files + new_files == 0)
+	std::cout << "All files are checksummed and consistent." << std::endl;
+
     return result;
 }
 
