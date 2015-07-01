@@ -11,8 +11,10 @@ int create_database(const std::string& directory)
 
     // checksum all given files
     checksum_files(directory, file_list);
+    const int result = write_database(directory, file_list);
+    delete_file_list(file_list);
     
-    return write_database(directory, file_list);
+    return result;
 }
 
 int verify_database(const std::string& directory)
@@ -90,6 +92,8 @@ int verify_database(const std::string& directory)
 	}
     }
 
+    delete_file_list(file_list);
+
     return SUCCESS;
 }
 
@@ -130,6 +134,19 @@ File* get_file_list(const std::string& directory)
     closedir(dir);
 
     return file_list;
+}
+
+void delete_file_list(File* file_list)
+{
+    File* current = file_list;
+    while(current != nullptr)
+    {
+	File* to_kill = current;
+	current = current->next;
+	delete to_kill;
+    }
+
+    return;
 }
 
 void checksum_files(const std::string& directory, File* file_list)
