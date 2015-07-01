@@ -78,6 +78,8 @@ int verify_database(const std::string& directory)
 	    {
 		std::cout << "NEW:     " << current->name << std::endl;
 		new_files++;
+		current = current->next;
+		continue;
 	    }
 
 	    unsigned int i = 0;
