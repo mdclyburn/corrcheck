@@ -12,57 +12,6 @@ File::~File()
 {
 }
 
-File* get_file_list(const std::string& directory)
-{
-    File* file_list = nullptr;
-    File* last = file_list;
-    DIR* dir = opendir(directory.c_str());
-    if(dir == nullptr)
-    {
-	std::cout << "\'" << directory << "\' is not readable." << std::endl;
-	return nullptr;
-    }
-
-    struct stat st;
-    struct dirent* entry = readdir(dir);
-    while(entry != nullptr)
-    {
-	// only add the file to the list if it is not a directory
-	lstat(entry->d_name, &st);
-	if(!S_ISDIR(st.st_mode) && std::string(entry->d_name).compare(".corrcheckdb") != 0)
-	{
-	    // null list
-	    if(file_list == nullptr)
-	    {
-		file_list = new File(std::string(entry->d_name));
-		last = file_list;
-	    }
-	    else
-	    {
-		last->next = new File(std::string(entry->d_name));
-		last = last->next;
-	    }
-	}
-	entry = readdir(dir);
-    }
-    closedir(dir);
-
-    return file_list;
-}
-
-void delete_file_list(File* file_list)
-{
-    File* current = file_list;
-    while(current != nullptr)
-    {
-	File* to_kill = current;
-	current = current->next;
-	delete to_kill;
-    }
-
-    return;
-}
-
 void checksum_files(const std::string& directory, File* const file_list, bool show_output)
 {
     SHA256_CTX sha;
@@ -102,5 +51,56 @@ void checksum_files(const std::string& directory, File* const file_list, bool sh
     delete[] buffer;
  
     return;
+}
+
+void delete_file_list(File* file_list)
+{
+    File* current = file_list;
+    while(current != nullptr)
+    {
+	File* to_kill = current;
+	current = current->next;
+	delete to_kill;
+    }
+
+    return;
+}
+
+File* get_file_list(const std::string& directory)
+{
+    File* file_list = nullptr;
+    File* last = file_list;
+    DIR* dir = opendir(directory.c_str());
+    if(dir == nullptr)
+    {
+	std::cout << "\'" << directory << "\' is not readable." << std::endl;
+	return nullptr;
+    }
+
+    struct stat st;
+    struct dirent* entry = readdir(dir);
+    while(entry != nullptr)
+    {
+	// only add the file to the list if it is not a directory
+	lstat(entry->d_name, &st);
+	if(!S_ISDIR(st.st_mode) && std::string(entry->d_name).compare(".corrcheckdb") != 0)
+	{
+	    // null list
+	    if(file_list == nullptr)
+	    {
+		file_list = new File(std::string(entry->d_name));
+		last = file_list;
+	    }
+	    else
+	    {
+		last->next = new File(std::string(entry->d_name));
+		last = last->next;
+	    }
+	}
+	entry = readdir(dir);
+    }
+    closedir(dir);
+
+    return file_list;
 }
 
