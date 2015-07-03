@@ -16,8 +16,8 @@
 #include "File.h"
 
 int create_database(const std::string& directory);
-int verify_database(const std::string& directory);
 int update_database();
+int verify_database(const std::string& directory);
 int write_database(const std::string& directory, const File* file_list);
 
 #endif

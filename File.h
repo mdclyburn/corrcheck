@@ -20,9 +20,9 @@ struct File
     File* next;
 };
 
-File* get_file_list(const std::string& directory);
+void checksum_files(const std::string& directory, File* const file_list, bool show_output = false);
 void delete_file_list(File* file_list);
-void checksum_files(const std::string& directory, File* const file_list, bool show_files = false);
+File* get_file_list(const std::string& directory);
 
 #endif
 

@@ -12,6 +12,60 @@ File::~File()
 {
 }
 
+void checksum_files(const std::string& directory, File* const file_list, bool show_output)
+{
+    SHA256_CTX sha;
+    unsigned char* buffer = new unsigned char[BUFFER_SIZE];
+    for(File* current_file = file_list; current_file != nullptr; current_file = current_file->next)
+    {
+	SHA256_Init(&sha);
+	FILE* file = fopen(std::string(directory + "/" + current_file->name).c_str(), "r");
+
+	// hash files in BUFFER_SIZE chunks
+	while(!feof(file))
+	{
+	    const unsigned int bytes_read = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, file);
+	    SHA256_Update(&sha, buffer, bytes_read);
+	}
+
+	// get the final hash
+	unsigned char hash[SHA256_DIGEST_LENGTH];
+	SHA256_Final(hash, &sha);
+	for(unsigned int b = 0; b < SHA256_DIGEST_LENGTH; b++)
+	{
+	    current_file->checksum[b] = hash[b];
+	}
+
+	// show files with their checksums if enabled
+	if(show_output)
+	{
+	    std::cout << current_file->name << " -> ";
+	    for(unsigned int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+		std::cout << std::hex << (unsigned int) hash[i];
+	    std::cout << std::endl;
+	}
+
+	fclose(file);
+    }
+
+    delete[] buffer;
+ 
+    return;
+}
+
+void delete_file_list(File* file_list)
+{
+    File* current = file_list;
+    while(current != nullptr)
+    {
+	File* to_kill = current;
+	current = current->next;
+	delete to_kill;
+    }
+
+    return;
+}
+
 File* get_file_list(const std::string& directory)
 {
     File* file_list = nullptr;
@@ -48,59 +102,5 @@ File* get_file_list(const std::string& directory)
     closedir(dir);
 
     return file_list;
-}
-
-void delete_file_list(File* file_list)
-{
-    File* current = file_list;
-    while(current != nullptr)
-    {
-	File* to_kill = current;
-	current = current->next;
-	delete to_kill;
-    }
-
-    return;
-}
-
-void checksum_files(const std::string& directory, File* const file_list, bool show_files)
-{
-    SHA256_CTX sha;
-    unsigned char* buffer = new unsigned char[BUFFER_SIZE];
-    for(File* current_file = file_list; current_file != nullptr; current_file = current_file->next)
-    {
-	SHA256_Init(&sha);
-	FILE* file = fopen(std::string(directory + "/" + current_file->name).c_str(), "r");
-
-	// hash files in BUFFER_SIZE chunks
-	while(!feof(file))
-	{
-	    const unsigned int bytes_read = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, file);
-	    SHA256_Update(&sha, buffer, bytes_read);
-	}
-
-	// get the final hash
-	unsigned char hash[SHA256_DIGEST_LENGTH];
-	SHA256_Final(hash, &sha);
-	for(unsigned int b = 0; b < SHA256_DIGEST_LENGTH; b++)
-	{
-	    current_file->checksum[b] = hash[b];
-	}
-
-	// show files with their checksums if enabled
-	if(show_files)
-	{
-	    std::cout << current_file->name << " -> ";
-	    for(unsigned int i = 0; i < SHA256_DIGEST_LENGTH; i++)
-		std::cout << std::hex << (unsigned int) hash[i];
-	    std::cout << std::endl;
-	}
-
-	fclose(file);
-    }
-
-    delete[] buffer;
- 
-    return;
 }
 
