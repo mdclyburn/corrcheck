@@ -33,8 +33,22 @@ struct File
     File* next;
 };
 
+/*
+  Checksum the files given in the linked list structure 'file_list' that
+are contained in the directory given by 'directory'. Optionally show the
+file names with their checksums if 'show_output' is true.
+ */
 void checksum_files(const std::string& directory, File* const file_list, bool show_output = false);
+
+/*
+  Delete the contents of the File linked list 'file_list'.
+ */
 void delete_file_list(File* file_list);
+
+/*
+  Returns a File linked list of the contents of the directory given
+by 'directory'.
+ */
 File* get_file_list(const std::string& directory);
 
 #endif
