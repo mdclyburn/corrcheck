@@ -63,7 +63,7 @@ void delete_file_list(File* file_list)
     return;
 }
 
-void checksum_files(const std::string& directory, File* const file_list, bool show_files)
+void checksum_files(const std::string& directory, File* const file_list, bool show_output)
 {
     SHA256_CTX sha;
     unsigned char* buffer = new unsigned char[BUFFER_SIZE];
@@ -88,7 +88,7 @@ void checksum_files(const std::string& directory, File* const file_list, bool sh
 	}
 
 	// show files with their checksums if enabled
-	if(show_files)
+	if(show_output)
 	{
 	    std::cout << current_file->name << " -> ";
 	    for(unsigned int i = 0; i < SHA256_DIGEST_LENGTH; i++)

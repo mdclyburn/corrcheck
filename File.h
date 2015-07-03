@@ -22,7 +22,7 @@ struct File
 
 File* get_file_list(const std::string& directory);
 void delete_file_list(File* file_list);
-void checksum_files(const std::string& directory, File* const file_list, bool show_files = false);
+void checksum_files(const std::string& directory, File* const file_list, bool show_output = false);
 
 #endif
 
