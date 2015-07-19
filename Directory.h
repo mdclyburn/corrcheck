@@ -21,10 +21,12 @@ public:
     const std::string& get_path() const;
 
     const std::vector<File*>& get_files() const;
+    const std::vector<std::string>& get_directories() const;
 
 private:
     std::string path;
     std::vector<File*> files;
+    std::vector<std::string> directories;
 
     void read_files();
 };

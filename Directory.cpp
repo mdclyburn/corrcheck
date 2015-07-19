@@ -32,6 +32,11 @@ const std::vector<File*>& Directory::get_files() const
     return files;
 }
 
+const std::vector<std::string>& Directory::get_directories() const
+{
+    return directories;
+}
+
 void Directory::read_files()
 {
     // debug
@@ -43,10 +48,11 @@ void Directory::read_files()
     struct dirent* entry = readdir(dir);
     while(entry != nullptr)
     {
-	// only add the file to the list if it is not a directory
 	lstat(entry->d_name, &st);
-	if(!S_ISDIR(st.st_mode))
+	if(S_ISREG(st.st_mode))
 	    files.push_back(new File(path + "/" + std::string(entry->d_name)));
+	else if(S_ISDIR(st.st_mode))
+	    directories.push_back(path + "/" + std::string(entry->d_name));
 	entry = readdir(dir);
     }
     closedir(dir);
