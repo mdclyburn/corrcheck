@@ -4,7 +4,7 @@ File::File() : path(""), checksum(nullptr)
 {
 }
 
-File::File(const std::string& path) : path(path)
+File::File(const std::string& path) : path(path), checksum(nullptr)
 {
 }
 
