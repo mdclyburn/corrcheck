@@ -51,7 +51,6 @@ unsigned int File::calculate_checksum()
 	    if(file.eof()) break;
 	    else bytes_read++;
 	}
-	std::cout << "read " << bytes_read << " bytes" << std::endl;
 
 	SHA256_Update(&sha, buffer, bytes_read);
     }
