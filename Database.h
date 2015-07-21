@@ -3,7 +3,9 @@
 
 #include <cassert>
 #include <fstream>
+#include <iostream>
 #include <map>
+#include <openssl/ssl.h>
 #include <string>
 
 #include "Directory.h"
