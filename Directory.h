@@ -4,6 +4,8 @@
 #include <cassert>
 #include <dirent.h>
 #include <iostream>
+#include <fstream>
+#include <map>
 #include <sys/stat.h>
 #include <string>
 #include <vector>
@@ -21,6 +23,7 @@ public:
     const std::string& get_path() const;
 
     const std::vector<File*>& get_files() const;
+    void checksum_files();
     const std::vector<std::string>& get_directories() const;
 
 private:
