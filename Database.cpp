@@ -41,6 +41,24 @@ unsigned int Database::load(const std::string& path)
 
 unsigned int Database::write(const std::string& dir)
 {
+    std::ofstream file;
+    file.open(dir + "/.corrcheckdb", std::ios::binary);
+    if(!file.is_open()) return DATABASE_FAILURE;
+
+    // write each entry <checksum> <null-terminated string>
+    for(auto it = file_checksums.begin(); it != file_checksums.end(); it++)
+    {
+	const std::string& name = it->first;
+	unsigned char* const checksum = it->second;
+
+	file.write(reinterpret_cast<char*>(checksum), SHA256_DIGEST_LENGTH);
+	for(unsigned int i = 0; i < name.length(); i++)
+	    file << name[i];
+	file << '\0';
+    }
+
+    file.close();
+
     return DATABASE_SUCCESS;
 }
 
