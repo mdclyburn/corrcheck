@@ -66,6 +66,9 @@ void Database::insert(const File* file)
 {
     assert(file_checksums.find(file->name) == file_checksums.end());
     file_checksums[file->name] = new unsigned char[SHA256_DIGEST_LENGTH];
+    unsigned char** const checksum = &file_checksums[file->name];
+    for(unsigned int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+	(*checksum)[i] = file->checksum[i];
 
     return;
 }

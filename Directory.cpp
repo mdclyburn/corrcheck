@@ -37,9 +37,20 @@ void Directory::checksum_files()
     assert(files.size() > 0);
 
     SHA256_CTX sha;
+    unsigned int last_length = 0;
+    unsigned int checksummed_files = 0;
     unsigned char* buffer = new unsigned char[FILE_BUFFER_SIZE];
+    std::string output_msg = "";
     for(auto it = files.begin(); it != files.end(); it++)
     {
+	// helpful output
+	output_msg = " (" + std::to_string(checksummed_files++) + " of " + std::to_string(files.size()) + ")" + " checksumming \'" + (*it)->name + '\'';
+	if(last_length > output_msg.length())
+	    while(last_length--) std::cout << ' ';
+	std::cout << '\r';
+	last_length = output_msg.length();
+	std::cout << output_msg << '\r' << std::flush;
+
 	SHA256_Init(&sha);
 	std::ifstream file;
 	file.open(path + '/' + (*it)->name, std::ios::binary);
@@ -60,7 +71,6 @@ void Directory::checksum_files()
 	}
 
 	SHA256_Final((*it)->checksum, &sha);
-	std::cout << "Checksummed " << (*it)->name << std::endl;
     }
 
     delete[] buffer;
