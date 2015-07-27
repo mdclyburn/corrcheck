@@ -11,6 +11,7 @@ int main(int argc, char** args)
 {
     // first argument will always be the action
     assert(argc >= 2);
+
     int result = 0;
     if(*args[1] == 'c') // create a new checksum database
     {
@@ -20,12 +21,9 @@ int main(int argc, char** args)
     }
     else if(*args[1] == 'v')
     {
-	if(argc == 2) result = verify_database(".");
-	else result = verify_database(string(args[2]));
     }
     else if(*args[1] == 'u')
     {
-	cout << "Updating database..." << endl;
     }
     else
     {
