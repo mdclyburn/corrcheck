@@ -2,6 +2,7 @@
 #define DIRECTORY_H
 
 #include <cassert>
+#include <cstring>
 #include <dirent.h>
 #include <iostream>
 #include <fstream>
