@@ -73,6 +73,13 @@ void Directory::checksum_files()
 	SHA256_Final((*it)->checksum, &sha);
     }
 
+    // clear line and print final message
+    output_msg = "Finished checksumming " + std::to_string(files.size()) + " files.";
+    std::cout << output_msg;
+    for(unsigned int i = 0; (output_msg.length() < last_length) && i < (last_length - output_msg.length()); i++)
+	std::cout << ' ';
+    std::cout << std::endl;
+
     delete[] buffer;
 
     return;
