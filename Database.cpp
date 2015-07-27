@@ -64,15 +64,21 @@ unsigned int Database::write(const std::string& dir)
 
 void Database::insert(const File* file)
 {
+    assert(file_checksums.find(file->name) == file_checksums.end());
+    file_checksums[file->name] = new unsigned char[SHA256_DIGEST_LENGTH];
+
     return;
 }
 
 void Database::remove(const std::string& file_name)
 {
+    assert(file_checksums.find(file_name) == file_checksums.end());
+    delete[] file_checksums[file_name];
+
     return;
 }
 
-const unsigned char* get(const std::string& file_name)
+const unsigned char* Database::get(const std::string& file_name)
 {
-    return nullptr;
+    return file_checksums[file_name];
 }
