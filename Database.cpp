@@ -24,11 +24,11 @@ unsigned int Database::load(const std::string& path)
 	file.read(reinterpret_cast<char*>(checksum), SHA256_DIGEST_LENGTH);
 
 	char ch;
-	file >> ch;
+	file.read(reinterpret_cast<char*>(&ch), sizeof(ch));
 	while(ch != '\0')
 	{
 	    file_name += ch;
-	    file >> ch;
+	    file.read(reinterpret_cast<char*>(&ch), sizeof(ch));
 	}
 
 	file_checksums[file_name] = checksum;
