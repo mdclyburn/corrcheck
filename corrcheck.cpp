@@ -71,7 +71,7 @@ int verify_database(const Options& opts)
 	std::cout << "Found " << found_changed_files.size() << " changed file(s):" << std::endl;
 	for(auto it = found_changed_files.begin(); it != found_changed_files.end(); it++)
 	    std::cout << *it << std::endl;
-	std::cout << "The databases needs to be updated or the file(s) have become corrupt." << std::endl;
+	std::cout << "The database needs to be updated or the file(s) have become corrupt." << std::endl;
     }
     else
 	std::cout << "All files are consistent." << std::endl;
