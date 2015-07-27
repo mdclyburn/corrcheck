@@ -21,9 +21,8 @@ int main(int argc, char** args)
     if(*args[1] == 'c') // create a new checksum database
 	create_database(opts);
 
-    else if(*args[1] == 'v')
-    {
-    }
+    else if(*args[1] == 'v') // check database entries against directory
+	verify_database(opts);
     else if(*args[1] == 'u')
     {
     }

@@ -17,6 +17,35 @@ int create_database(const Options& opts)
 
 int verify_database(const Options& opts)
 {
-    return DATABASE_FAILURE;
+    bool needs_updating = false;
+
+    Directory dir;
+    dir.set_path(opts.directory);
+
+    Database db;
+    db.load(opts.directory);
+
+    // find new files
+    std::set<std::string> found_new_files;
+    const std::vector<File*>& current_files = dir.get_files();
+    for(auto it = current_files.begin(); it != current_files.end(); it++)
+    {
+	if(db.get((*it)->name) == nullptr)
+	    found_new_files.insert((*it)->name);
+    }
+
+    if(found_new_files.size() > 0)
+    {
+	std::cout << "Found " << found_new_files.size() << " new file(s):" << std::endl;
+	for(auto it = found_new_files.begin(); it != found_new_files.end(); it++)
+	    std::cout << *it << std::endl;
+	std::cout << "The database should be updated." << std::endl;
+    }
+    else
+	std::cout << "No new files found." << std::endl;
+
+    // verify checksums
+
+    return CORRCHECK_SUCCESS;
 }
 
