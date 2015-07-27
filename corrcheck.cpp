@@ -45,6 +45,36 @@ int verify_database(const Options& opts)
 	std::cout << "No new files found." << std::endl;
 
     // verify checksums
+    // check against files in directory; need to be checksummed first
+    dir.checksum_files();
+    std::set<std::string> found_changed_files;
+    for(auto it = current_files.begin(); it != current_files.end(); it++)
+    {
+	// if it's a new file, no point in going further
+	if(found_new_files.find((*it)->name) != found_new_files.end())
+	    continue;
+
+	const unsigned char* const current_sum = db.get((*it)->name);
+	assert(current_sum != nullptr);
+	unsigned int i = 0;
+	for(; i < SHA256_DIGEST_LENGTH; i++)
+	{
+	    if(current_sum[i] != (*it)->checksum[i])
+		break;
+	}
+	if(i < SHA256_DIGEST_LENGTH) // changed checksum
+	    found_changed_files.insert((*it)->name);
+    }
+
+    if(found_changed_files.size() > 0)
+    {
+	std::cout << "Found " << found_changed_files.size() << " changed file(s):" << std::endl;
+	for(auto it = found_changed_files.begin(); it != found_changed_files.end(); it++)
+	    std::cout << *it << std::endl;
+	std::cout << "The databases needs to be updated or the file(s) have become corrupt." << std::endl;
+    }
+    else
+	std::cout << "All files are consistent." << std::endl;
 
     return CORRCHECK_SUCCESS;
 }
