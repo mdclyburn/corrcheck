@@ -6,26 +6,25 @@
 using namespace std;
 
 #include "corrcheck.h"
+#include "Options.h"
 
 int main(int argc, char** args)
 {
     // first argument will always be the action
     assert(argc >= 2);
+
+    // set options specified
+    Options opts;
+    read_options(opts, args);
+    
     int result = 0;
     if(*args[1] == 'c') // create a new checksum database
-    {
-	// if a directory is not specified, then use the current directory
-	if(argc == 2) result = create_database(".");
-	else result = create_database(string(args[2]));
-    }
-    else if(*args[1] == 'v')
-    {
-	if(argc == 2) result = verify_database(".");
-	else result = verify_database(string(args[2]));
-    }
+	create_database(opts);
+
+    else if(*args[1] == 'v') // check database entries against directory
+	verify_database(opts);
     else if(*args[1] == 'u')
     {
-	cout << "Updating database..." << endl;
     }
     else
     {
