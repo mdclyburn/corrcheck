@@ -18,19 +18,18 @@ unsigned int Database::load(const std::string& path)
 
     // read each entry <checksum> <null-terminated string>
     std::string file_name = "";
-    while(!file.eof())
+    while(file.peek() != EOF)
     {
 	unsigned char* checksum = new unsigned char[SHA256_DIGEST_LENGTH];
-	for(unsigned int i = 0; i < SHA256_DIGEST_LENGTH; i++)
-	    file >> checksum[i];
+	file.read(reinterpret_cast<char*>(checksum), SHA256_DIGEST_LENGTH);
 
 	char ch;
-	do
+	file >> ch;
+	while(ch != '\0')
 	{
-	    file >> ch;
 	    file_name += ch;
+	    file >> ch;
 	}
-	while(ch != '\0');
 
 	file_checksums[file_name] = checksum;
 
