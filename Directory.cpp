@@ -34,7 +34,11 @@ const std::vector<File*>& Directory::get_files() const
 
 void Directory::checksum_files()
 {
-    assert(files.size() > 0);
+    if(files.size() == 0)
+    {
+	std::cout << "No files to checksum." << std::endl;
+	return;
+    }
 
     SHA256_CTX sha;
     unsigned int last_length = 0;
@@ -108,7 +112,7 @@ void Directory::read_files()
 	    file->name = entry->d_name;
 	    files.push_back(file);
 	}
-	else if(S_ISDIR(st.st_mode))
+	else if(S_ISDIR(st.st_mode) && std::strcmp(entry->d_name, ".") != 0 && std::strcmp(entry->d_name, "..") != 0)
 	    directories.push_back(std::string(entry->d_name));
 	entry = readdir(dir);
     }

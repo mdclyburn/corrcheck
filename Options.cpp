@@ -1,6 +1,6 @@
 #include "Options.h"
 
-Options::Options() : recursive(true), directory(".")
+Options::Options() : recursive(false), directory(".")
 {
 }
 

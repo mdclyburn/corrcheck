@@ -12,6 +12,19 @@ int create_database(const Options& opts)
 	db.insert(*it);
     db.write(opts.directory);
 
+    if(opts.recursive == true)
+    {
+	const std::vector<std::string>& directories = dir.get_directories();
+	for(auto it = directories.begin(); it != directories.end(); it++)
+	{
+	    Options new_opts = opts;
+	    new_opts.directory += '/' + *it;
+	    std::cout << "Continuing in " << new_opts.directory << std::endl;
+	    if(create_database(new_opts) != CORRCHECK_SUCCESS)
+		std::cout << "Failed in " << new_opts.directory << std::endl;
+	}
+    }
+
     return CORRCHECK_SUCCESS;
 }
 
@@ -75,6 +88,19 @@ int verify_database(const Options& opts)
     }
     else
 	std::cout << "All files are consistent." << std::endl;
+
+    // recurse if necessary
+    if(opts.recursive == true)
+    {
+	const std::vector<std::string>& directories = dir.get_directories();
+	for(auto it = directories.begin(); it != directories.end(); it++)
+	{
+	    Options new_opts = opts;
+	    new_opts.directory += '/' + *it;
+	    if(verify_database(new_opts) != CORRCHECK_SUCCESS)
+		std::cout << "Failed in " << new_opts.directory << std::endl;
+	}
+    }
 
     return CORRCHECK_SUCCESS;
 }
