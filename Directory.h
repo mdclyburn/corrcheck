@@ -24,7 +24,7 @@ public:
     const std::string& get_path() const;
 
     const std::vector<File*>& get_files() const;
-    void checksum_files();
+    void checksum_files(bool verbose = false);
     const std::vector<std::string>& get_directories() const;
 
 private:
