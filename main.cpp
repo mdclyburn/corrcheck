@@ -11,11 +11,15 @@ using namespace std;
 int main(int argc, char** args)
 {
     // first argument will always be the action
-    assert(argc >= 2);
+    if(argc < 2)
+    {
+	cout << "No mode specified. Exiting." << endl;
+	return 1;
+    }
 
     // set options specified
     Options opts;
-    read_options(opts, args);
+    read_options(opts, argc, args);
     
     int result = 0;
     if(*args[1] == 'c') // create a new checksum database
