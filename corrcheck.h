@@ -12,8 +12,8 @@
 #include "Database.h"
 #include "Options.h"
 
-#define CORRCHECK_SUCCESS 0;
-#define CORRCHECK_FAILURE 1;
+#define CORRCHECK_SUCCESS 0
+#define CORRCHECK_FAILURE 1
 
 /*
   Create a .corrcheckdb of the files in a directory given by 'directory'.
