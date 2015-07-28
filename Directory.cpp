@@ -101,7 +101,7 @@ void Directory::read_files()
     struct dirent* entry = readdir(dir);
     while(entry != nullptr)
     {
-	lstat(entry->d_name, &st);
+	lstat(std::string(path + '/' + entry->d_name).c_str(), &st);
 	if(S_ISREG(st.st_mode) && std::strcmp(entry->d_name, ".corrcheckdb") != 0)
 	{
 	    File* file = new File;
