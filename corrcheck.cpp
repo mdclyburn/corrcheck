@@ -4,7 +4,7 @@ int create_database(const Options& opts)
 {
     Directory dir;
     dir.set_path(opts.directory);
-    dir.checksum_files();
+    dir.checksum_files(!opts.recursive);
 
     Database db;
     const std::vector<File*>& files = dir.get_files();
@@ -59,7 +59,7 @@ int verify_database(const Options& opts)
 
     // verify checksums
     // check against files in directory; need to be checksummed first
-    dir.checksum_files();
+    dir.checksum_files(!opts.recursive);
     std::set<std::string> found_changed_files;
     for(auto it = current_files.begin(); it != current_files.end(); it++)
     {

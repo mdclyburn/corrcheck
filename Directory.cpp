@@ -32,7 +32,7 @@ const std::vector<File*>& Directory::get_files() const
     return files;
 }
 
-void Directory::checksum_files()
+void Directory::checksum_files(bool verbose)
 {
     if(files.size() == 0)
     {
@@ -48,12 +48,15 @@ void Directory::checksum_files()
     for(auto it = files.begin(); it != files.end(); it++)
     {
 	// helpful output
-	output_msg = " (" + std::to_string(checksummed_files++) + " of " + std::to_string(files.size()) + ")" + " checksumming \'" + (*it)->name + '\'';
-	if(last_length > output_msg.length())
-	    while(last_length--) std::cout << ' ';
-	std::cout << '\r';
-	last_length = output_msg.length();
-	std::cout << output_msg << '\r' << std::flush;
+	if(verbose)
+	{
+	    output_msg = " (" + std::to_string(checksummed_files++) + " of " + std::to_string(files.size()) + ")" + " checksumming \'" + (*it)->name + '\'';
+	    if(last_length > output_msg.length())
+		while(last_length--) std::cout << ' ';
+	    std::cout << '\r';
+	    last_length = output_msg.length();
+	    std::cout << output_msg << '\r' << std::flush;
+	}
 
 	SHA256_Init(&sha);
 	std::ifstream file;
@@ -78,11 +81,14 @@ void Directory::checksum_files()
     }
 
     // clear line and print final message
-    output_msg = "Finished checksumming " + std::to_string(files.size()) + " files.";
-    std::cout << output_msg;
-    for(unsigned int i = 0; (output_msg.length() < last_length) && i < (last_length - output_msg.length()); i++)
-	std::cout << ' ';
-    std::cout << std::endl;
+    if(verbose)
+    {
+	output_msg = "Finished checksumming " + std::to_string(files.size()) + " files.";
+	std::cout << output_msg;
+	for(unsigned int i = 0; (output_msg.length() < last_length) && i < (last_length - output_msg.length()); i++)
+	    std::cout << ' ';
+	std::cout << std::endl;
+    }
 
     delete[] buffer;
 
