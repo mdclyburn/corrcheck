@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <cstring>
 #include <dirent.h>
 #include <iostream>
 #include <string>
