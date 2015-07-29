@@ -35,8 +35,25 @@ int verify_database(const Options& opts)
     Directory dir;
     dir.set_path(opts.directory);
 
+    // recurse if necessary
+    if(opts.recursive == true)
+    {
+	const std::vector<std::string>& directories = dir.get_directories();
+	for(auto it = directories.begin(); it != directories.end(); it++)
+	{
+	    Options new_opts = opts;
+	    new_opts.directory += '/' + *it;
+	    if(verify_database(new_opts) != CORRCHECK_SUCCESS)
+		std::cout << "Failed in " << new_opts.directory << std::endl;
+	}
+    }
+
     Database db;
-    db.load(opts.directory);
+    if(db.load(opts.directory) != DATABASE_SUCCESS) // failed to open
+    {
+	std::cout << "No database file in " << opts.directory << std::endl;
+	return CORRCHECK_SUCCESS;
+    }
 
     // find new files
     std::set<std::string> found_new_files;
@@ -88,19 +105,6 @@ int verify_database(const Options& opts)
     }
     else
 	std::cout << "All files are consistent." << std::endl;
-
-    // recurse if necessary
-    if(opts.recursive == true)
-    {
-	const std::vector<std::string>& directories = dir.get_directories();
-	for(auto it = directories.begin(); it != directories.end(); it++)
-	{
-	    Options new_opts = opts;
-	    new_opts.directory += '/' + *it;
-	    if(verify_database(new_opts) != CORRCHECK_SUCCESS)
-		std::cout << "Failed in " << new_opts.directory << std::endl;
-	}
-    }
 
     return CORRCHECK_SUCCESS;
 }
